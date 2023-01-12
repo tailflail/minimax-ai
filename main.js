@@ -1,3 +1,82 @@
+let gameBoard = document.getElementById("gameBoard");
+let startScreen = document.getElementById("startScreen");
+let startButton = document.getElementById("startButton");
+let playerOneInput = document.getElementById("playerOneInput");
+let playerTwoInput = document.getElementById("playerTwoInput");
+let playerOneName = document.getElementById("playerOneName");
+let playerTwoName = document.getElementById("playerTwoName");
+let playerOneScore = document.getElementById("playerOneScore");
+let playerTwoScore = document.getElementById("playerTwoScore");
+let gridContainer = document.getElementById("gridSquares");
+let gridButtons = gridContainer.querySelectorAll("button");
+let resetBoard = document.getElementById("resetBoard");
+let resetPlayers = document.getElementById("resetPlayers");
+
+let playerOne;
+let playerTwo;
+
+initEvents();
+
+function initEvents() {
+    startButton.addEventListener("click", onStartButtonClick);
+    resetBoard.addEventListener("click", onResetBoardButtonClick);
+    resetPlayers.addEventListener("click", onResetPlayersButtonClick);
+
+    gridButtons.forEach((gridButton, index) => {
+    gridButton.addEventListener("click", () => { onGridButtonClick(gridButton, index) })
+});
+}
+
+// main game logic
+function onGridButtonClick(gridButton, index) {
+    if (!game.isGameOver() && gridButton.textContent === "") {
+        game.playRound(playerOne, playerTwo, index);
+
+        gridButton.textContent = game.getSquare(index);
+        playerOneScore.textContent = `${playerOne.getScore()}`;
+        playerTwoScore.textContent = `${playerTwo.getScore()}`;
+    }
+}
+
+// button to reset the board squares when game is over
+function onResetBoardButtonClick() {
+    if (game.isGameOver()) {
+        gridButtons.forEach((gridButton) => {
+            gridButton.textContent = "";
+        });
+        game.resetGame();
+    }
+}
+
+// button to display the game board with the chosen player names
+function onStartButtonClick(event) {
+    event.preventDefault();
+
+    playerOne = Player(playerOneInput.value);
+    playerTwo = Player(playerTwoInput.value);
+
+    playerOneName.textContent = playerOne.getName();
+    playerTwoName.textContent = playerTwo.getName();
+
+    startScreen.classList.toggle("hidden");
+    gameBoard.classList.toggle("hidden");
+}
+
+// button to reset and choose new player names
+function onResetPlayersButtonClick(event) {
+    event.preventDefault();
+
+    resetBoard.click();
+    playerOne.resetPlayer();
+    playerTwo.resetPlayer();
+
+    playerOneScore.textContent = `${playerOne.getScore()}`;
+    playerTwoScore.textContent = `${playerTwo.getScore()}`;
+
+    gameBoard.classList.toggle("hidden");
+    startScreen.classList.toggle("hidden");
+}
+
 // tic-tac-toe game module
 const game = (() => {
     let board = new Map();
@@ -72,72 +151,3 @@ const Player = (name) => {
 
     return { getName, getScore, win, resetPlayer };
 };
-
-let gameBoard = document.getElementById("gameBoard");
-let startScreen = document.getElementById("startScreen");
-let startButton = document.getElementById("startButton");
-let playerOneInput = document.getElementById("playerOneInput");
-let playerTwoInput = document.getElementById("playerTwoInput");
-let playerOneName = document.getElementById("playerOneName");
-let playerTwoName = document.getElementById("playerTwoName");
-let playerOneScore = document.getElementById("playerOneScore");
-let playerTwoScore = document.getElementById("playerTwoScore");
-let choiceContainer = document.getElementById("choices");
-let choiceButtons = choiceContainer.querySelectorAll("button");
-let resetBoard = document.getElementById("resetBoard");
-let resetPlayers = document.getElementById("resetPlayers");
-
-let playerOne;
-let playerTwo;
-
-// button to display the game board with the chosen player names
-startButton.addEventListener("click", (event) => {
-    event.preventDefault();
-
-    playerOne = Player(playerOneInput.value);
-    playerTwo = Player(playerTwoInput.value);
-
-    playerOneName.textContent = playerOne.getName();
-    playerTwoName.textContent = playerTwo.getName();
-
-    startScreen.classList.toggle("hidden");
-    gameBoard.classList.toggle("hidden");
-})
-
-// main game loop
-choiceButtons.forEach((item, index) => {
-    item.addEventListener("click", () => {
-        if (!game.isGameOver() && item.textContent === "") {
-            game.playRound(playerOne, playerTwo, index);
-
-            item.textContent = game.getSquare(index);
-            playerOneScore.textContent = `${playerOne.getScore()}`;
-            playerTwoScore.textContent = `${playerTwo.getScore()}`;
-        }
-    });
-});
-
-// button to reset the board squares when game is over
-resetBoard.addEventListener("click", () => {
-    if (game.isGameOver()) {
-        choiceButtons.forEach((item) => {
-            item.textContent = "";
-        });
-        game.resetGame();
-    }
-});
-
-// button to reset and choose new player names
-resetPlayers.addEventListener("click", (event) => {
-    event.preventDefault();
-
-    resetBoard.click();
-    playerOne.resetPlayer();
-    playerTwo.resetPlayer();
-
-    playerOneScore.textContent = `${playerOne.getScore()}`;
-    playerTwoScore.textContent = `${playerTwo.getScore()}`;
-
-    gameBoard.classList.toggle("hidden");
-    startScreen.classList.toggle("hidden");
-})
