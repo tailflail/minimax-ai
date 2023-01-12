@@ -27,9 +27,11 @@ const game = (() => {
             if (board.get(comb[0]) === "X" && board.get(comb[1]) === "X" && board.get(comb[2]) === "X") {
                 playerOne.win()
                 gameOver = true;
+                break;
             } else if (board.get(comb[0]) === "O" && board.get(comb[1]) === "O" && board.get(comb[2]) === "O") {
                 playerTwo.win();
                 gameOver = true;
+                break;
             }
         }
     }
@@ -58,15 +60,15 @@ const game = (() => {
 // player factory function
 const Player = (name) => {
     let score = 0;
-    const getName = () => name;
 
+    const getName = () => name;
     const getScore = () => score;
+    const win = () => ++score;
 
     const resetPlayer = () => {
         score = 0;
         name = "";
     }
-    const win = () => ++score;
 
     return { getName, getScore, win, resetPlayer };
 };
@@ -118,7 +120,7 @@ choiceButtons.forEach((item, index) => {
 // button to reset the board squares when game is over
 resetBoard.addEventListener("click", () => {
     if (game.isGameOver()) {
-        choiceButtons.forEach((item, idx) => {
+        choiceButtons.forEach((item) => {
             item.textContent = "";
         });
         game.resetGame();
