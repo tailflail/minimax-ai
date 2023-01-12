@@ -1,4 +1,4 @@
-// game module
+// tic-tac-toe game module
 const game = (() => {
     let board = new Map();
     let xTurn = true;
@@ -14,35 +14,45 @@ const game = (() => {
         [2,4,6]
     ];
 
-    const resetGame = () => {
-        game.board = new Map();
-        game.gameOver = false;
-    }
-
-    const changeTurn = () => {
-        game.xTurn = !game.xTurn;
-    }
-
+    // private methods
     const checkSquares = (playerOne, playerTwo) => {
-        if (game.board.size > 8) {
-            game.gameOver = true;
+        if (board.size > 8) {
+            gameOver = true;
             return;
         }
 
         for (let i = 0; i < winningCombinations.length; ++i) {
             let comb = winningCombinations[i];
 
-            if (game.board.get(comb[0]) === "X" && game.board.get(comb[1]) === "X" && game.board.get(comb[2]) === "X") {
+            if (board.get(comb[0]) === "X" && board.get(comb[1]) === "X" && board.get(comb[2]) === "X") {
                 playerOne.win()
-                game.gameOver = true;
-            } else if (game.board.get(comb[0]) === "O" && game.board.get(comb[1]) === "O" && game.board.get(comb[2]) === "O") {
+                gameOver = true;
+            } else if (board.get(comb[0]) === "O" && board.get(comb[1]) === "O" && board.get(comb[2]) === "O") {
                 playerTwo.win();
-                game.gameOver = true;
+                gameOver = true;
             }
         }
     }
 
-    return { board, xTurn, gameOver, resetGame, checkSquares, changeTurn };
+    const changeTurn = () => xTurn = !xTurn;
+
+    // public methods
+    const isGameOver = () => gameOver;
+
+    const getSquare = (index) => board.get(index);
+
+    const resetGame = () => {
+        board = new Map();
+        gameOver = false;
+    }
+
+    const playRound = (playerOne, playerTwo, index) => {
+        xTurn ? board.set(index, "X") : board.set(index, "O");
+        changeTurn();
+        checkSquares(playerOne, playerTwo);
+    }
+
+    return { isGameOver, getSquare, resetGame, playRound };
 })();
 
 // player factory function
@@ -93,19 +103,12 @@ startButton.addEventListener("click", (event) => {
 })
 
 // main game loop
-choiceButtons.forEach((item, idx) => {
+choiceButtons.forEach((item, index) => {
     item.addEventListener("click", () => {
-        if (!game.gameOver && item.textContent === "") {
-            if (game.xTurn) {
-                item.textContent = "X";
-                game.board.set(idx, "X");
-            } else {
-                item.textContent = "O";
-                game.board.set(idx, "O");
-            }
-            game.changeTurn();
+        if (!game.isGameOver() && item.textContent === "") {
+            game.playRound(playerOne, playerTwo, index);
 
-            game.checkSquares(playerOne, playerTwo);
+            item.textContent = game.getSquare(index);
             playerOneScore.textContent = `${playerOne.getScore()}`;
             playerTwoScore.textContent = `${playerTwo.getScore()}`;
         }
@@ -114,7 +117,7 @@ choiceButtons.forEach((item, idx) => {
 
 // button to reset the board squares when game is over
 resetBoard.addEventListener("click", () => {
-    if (game.gameOver) {
+    if (game.isGameOver()) {
         choiceButtons.forEach((item, idx) => {
             item.textContent = "";
         });
