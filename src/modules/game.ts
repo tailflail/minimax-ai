@@ -68,7 +68,6 @@ export default class Game {
 
     changeTurn(this: Game) {
         this.xTurn = !this.xTurn;
-        ++this.boardSize;
     }
 
     playRound(this: Game, index: number) {
@@ -90,6 +89,7 @@ export default class Game {
             if (index === 2 || index === 4 || index === 6) --this.diagonals[1];
         }
 
+        ++this.boardSize;
         this.winCheck();
     }
 }
