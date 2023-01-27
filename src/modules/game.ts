@@ -1,41 +1,40 @@
 import Player from "./player.js";
 
 export default class Game {
-    private board = new Map();
+    private boardSize = 0;
     private xTurn = true;
     private gameOver = false;
-    private winningCombinations = [
-        [0,1,2],
-        [3,4,5],
-        [6,7,8],
-        [0,3,6],
-        [1,4,7],
-        [2,5,8],
-        [0,4,8],
-        [2,4,6]
-    ];
+
+    private rows = [0,0,0];
+    private columns = [0,0,0];
+    private diagonals = [0,0];
 
     playerOne = new Player();
     playerTwo = new Player();
 
     // private methods
-    private checkSquares(this: Game) {
-        if (this.board.size > 8) {
+
+    // The rows/columns/diagonals arrays have their appropriate element incremented for "X", or decremented for "O". 
+    // A winning state for "X" then occurs when the value 3 appears, and a winning state for "O" occurs when the value -3 appears.
+    private winCheck(this: Game) {
+        if (this.boardSize > 8) {
             this.gameOver = true;
             return;
         }
 
-        for (let i = 0; i < this.winningCombinations.length; ++i) {
-            let comb = this.winningCombinations[i];
+        for (let i = 0; i < this.rows.length; ++i) {
+            if (this.rows[i] === 3 || this.rows[i] === -3 || this.columns[i] === 3 || this.columns[i] === -3) {
+                this.currentPlayer().win();
+                this.gameOver = true;
+                return;
+            }
+        }
 
-            if (this.board.get(comb[0]) === "X" && this.board.get(comb[1]) === "X" && this.board.get(comb[2]) === "X") {
-                this.playerOne.win()
+        for (let i = 0; i < this.diagonals.length; ++i) {
+            if (this.diagonals[i] === 3 || this.diagonals[i] === -3) {
+                this.currentPlayer().win();
                 this.gameOver = true;
-                break;
-            } else if (this.board.get(comb[0]) === "O" && this.board.get(comb[1]) === "O" && this.board.get(comb[2]) === "O") {
-                this.playerTwo.win();
-                this.gameOver = true;
-                break;
+                return;
             }
         }
     }
@@ -45,13 +44,21 @@ export default class Game {
         return this.gameOver;
     }
 
-    getSquare(this: Game, index: number) {
-        return this.board.get(index);
+    currentPlayer(this: Game) {
+        if (this.xTurn) {
+            return this.playerOne;
+        } else {
+            return this.playerTwo;
+        }
     }
 
     nextRound(this: Game) {
-        this.board = new Map();
+        this.boardSize = 0;
+        this.xTurn = true;
         this.gameOver = false;
+        this.rows = [0,0,0];
+        this.columns = [0,0,0];
+        this.diagonals = [0,0];
     }
 
     resetPlayers(this: Game) {
@@ -59,14 +66,30 @@ export default class Game {
         this.playerTwo.reset();
     }
 
+    changeTurn(this: Game) {
+        this.xTurn = !this.xTurn;
+        ++this.boardSize;
+    }
+
     playRound(this: Game, index: number) {
+        const row = Math.floor(index / 3);
+        const col = index % 3;
+
         if (this.xTurn) {
-            this.board.set(index, "X");
+            ++this.rows[row];
+            ++this.columns[col];
+
+            if (index === 0 || index === 4 || index === 8) ++this.diagonals[0];
+            if (index === 2 || index === 4 || index === 6) ++this.diagonals[1];
+
         } else {
-            this.board.set(index, "O");
+            --this.rows[row];
+            --this.columns[col];
+
+            if (index === 0 || index === 4 || index === 8) --this.diagonals[0];
+            if (index === 2 || index === 4 || index === 6) --this.diagonals[1];
         }
 
-        this.xTurn = !this.xTurn;
-        this.checkSquares();
+        this.winCheck();
     }
 }

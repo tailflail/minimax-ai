@@ -25,7 +25,7 @@ function initEvents() {
 
     gridButtons.forEach((gridButton : HTMLElement, index : number) => {
     gridButton.addEventListener("click", () => { onGridButtonClick(gridButton, index) })
-});
+    });
 }
 
 // main game logic
@@ -33,7 +33,14 @@ function onGridButtonClick(gridButton : HTMLElement, index : number) {
     if (!game.isGameOver() && gridButton.textContent === "") {
         game.playRound(index);
 
-        gridButton.textContent = game.getSquare(index);
+        if (game.currentPlayer() === game.playerOne) {
+            gridButton.textContent = "X";
+        } else {
+            gridButton.textContent = "O";
+        }
+
+        game.changeTurn();
+
         playerOneScore.textContent = `${game.playerOne.score}`;
         playerTwoScore.textContent = `${game.playerTwo.score}`;
     }
