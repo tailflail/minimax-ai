@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .grid-square {
+        @apply bg-neutral-900 text-[500%] md:text-[1600%] lg:text-[2000%] flex items-center justify-center text-neutral-200;
+    }
+}
