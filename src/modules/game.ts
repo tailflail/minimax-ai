@@ -1,13 +1,21 @@
 import Player from "./player.js";
 
 export default class Game {
-    private board : string[] = Array(9).fill("-");
+    board : string[] = new Array(9).fill("-");
+    private moveCount = 0;
     private xTurn = true;
     private gameOver = false;
 
-    private rows = [0,0,0];
-    private columns = [0,0,0];
-    private diagonals = [0,0];
+    private readonly winningCombinations = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ];
 
     playerOne = new Player();
     playerTwo = new Player();
@@ -26,12 +34,10 @@ export default class Game {
     }
 
     nextRound(this: Game) : void {
-        this.board = Array(9).fill("-");
+        this.board = new Array(9).fill("-");
+        this.moveCount = 0;
         this.xTurn = true;
         this.gameOver = false;
-        this.rows = [0,0,0];
-        this.columns = [0,0,0];
-        this.diagonals = [0,0];
     }
 
     resetPlayers(this: Game) : void {
@@ -49,79 +55,38 @@ export default class Game {
     playRound(this: Game, index: number) : void {
         const row = Math.floor(index / 3);
         const col = index % 3;
-
+        
         if (this.currentPlayer() === this.playerOne) {
-            ++this.rows[row];
-            ++this.columns[col];
-
-            if (index === 0 || index === 4 || index === 8) ++this.diagonals[0];
-            if (index === 2 || index === 4 || index === 6) ++this.diagonals[1];
-
             this.board[index] = "X";
 
         } else {
-            --this.rows[row];
-            --this.columns[col];
-
-            if (index === 0 || index === 4 || index === 8) --this.diagonals[0];
-            if (index === 2 || index === 4 || index === 6) --this.diagonals[1];
-
             this.board[index] = "O";
         }
 
+        ++this.moveCount
         this.winCheck();
-    }
-
-    // obtains the index of the best move for "O" using minimax
-    getBestMove() : number {
-        let bestScore = -Infinity;
-        let bestMove = -1;
-
-        for (let i = 0; i < 9; ++i) {
-            if (this.board[i] === "-") {
-                this.board[i] === "O";
-                const score = this.minimax(false);
-                this.board[i] === "-";
-
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = i;
-                }
-            }
-        }
-        return bestMove;
     }
 
     // private methods
     private winCheck(this: Game) : string {
-        if (this.board.length > 8) {
+        if (this.moveCount > 8) {
             this.gameOver = true;
             return "DRAW";
         }
 
-        for (let i = 0; i < this.rows.length; ++i) {
-            if (this.rows[i] === 3 || this.rows[i] === -3 || this.columns[i] === 3 || this.columns[i] === -3) {
-                this.currentPlayer().win();
-                this.gameOver = true;
-                
-                if (this.currentPlayer() === this.playerOne) {
-                    return "X";
-                } else {
-                    return "O";
-                }
-            }
-        }
+        for (let i = 0; i < this.winningCombinations.length; ++i) {
+            let comb = this.winningCombinations[i];
 
-        for (let i = 0; i < this.diagonals.length; ++i) {
-            if (this.diagonals[i] === 3 || this.diagonals[i] === -3) {
-                this.currentPlayer().win();
+            if (this.board[comb[0]] === "X" && this.board[comb[1]] === "X" && this.board[comb[2]] === "X") {
+                this.playerOne.win();
                 this.gameOver = true;
-                
-                if (this.currentPlayer() === this.playerOne) {
-                    return "X";
-                } else {
-                    return "O";
-                }
+                return "X"
+            }
+
+            if (this.board[comb[0]] === "O" && this.board[comb[1]] === "O" && this.board[comb[2]] === "O") {
+                this.playerTwo.win();
+                this.gameOver = true;
+                return "O"
             }
         }
         return "CONTINUE";
@@ -130,18 +95,17 @@ export default class Game {
     // Minimax algorithm recursively fills the remaining squares and ranks the outcomes.
     // A positive score indicates a favourable outcome for "O", while a negative score
     // indicates a favourable outcome for "X".
-    private minimax(isMaximizing : boolean) : number {
+    private minimax(isMaximizing: boolean) : number {
         let result = this.winCheck();
         
         if (result === "X") return -1;
         if (result === "O") return 1;
-        if (result === "DRAW") return 0;
+        if (result === "DRAW" || result === "CONTINUE") return 0;
 
         if (isMaximizing) {
             let bestScore = -Infinity;
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
-                    this.board[i] = "O";
                     const score = this.minimax(false) as number;
                     this.board[i] = "-";
                     bestScore = Math.max(score, bestScore);
@@ -152,7 +116,6 @@ export default class Game {
             let bestScore = Infinity;
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
-                    this.board[i] === "X";
                     const score = this.minimax(true) as number;
                     this.board[i] = "-";
                     bestScore = Math.min(score, bestScore);
@@ -160,5 +123,24 @@ export default class Game {
             }
             return bestScore;
         }
+    }
+
+    // obtains the index of the best move for "O" using minimax
+    getBestMove() : number {
+        let bestScore = -Infinity;
+        let bestMove = -1;
+
+        for (let i = 0; i < 9; ++i) {
+            if (this.board[i] === "-") {
+                const score = this.minimax(false);
+                this.board[i] = "-";
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+        return bestMove;
     }
 }
