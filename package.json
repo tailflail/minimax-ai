@@ -1,5 +1,5 @@
 {
-  "name": "tic-tac-toe",
+  "name": "minimax-ai",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tailflail/tic-tac-toe.git"
+    "url": "git+https://github.com/tailflail/minimax-ai.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tailflail/tic-tac-toe/issues"
+    "url": "https://github.com/tailflail/minimax-ai/issues"
   },
-  "homepage": "https://github.com/tailflail/tic-tac-toe#readme",
+  "homepage": "https://github.com/tailflail/minimax-ai#readme",
   "devDependencies": {
     "typescript": "^4.9.4",
     "tailwindcss": "^3.2.4"

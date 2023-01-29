@@ -50,7 +50,7 @@ export default class Game {
         const row = Math.floor(index / 3);
         const col = index % 3;
 
-        if (this.xTurn) {
+        if (this.currentPlayer() === this.playerOne) {
             ++this.rows[row];
             ++this.columns[col];
 
@@ -70,6 +70,26 @@ export default class Game {
         }
 
         this.winCheck();
+    }
+
+    // obtains the index of the best move for "O" using minimax
+    getBestMove() : number {
+        let bestScore = -Infinity;
+        let bestMove = -1;
+
+        for (let i = 0; i < 9; ++i) {
+            if (this.board[i] === "-") {
+                this.board[i] === "O";
+                const score = this.minimax(false);
+                this.board[i] === "-";
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+        return bestMove;
     }
 
     // private methods
@@ -110,7 +130,7 @@ export default class Game {
     // Minimax algorithm recursively fills the remaining squares and ranks the outcomes.
     // A positive score indicates a favourable outcome for "O", while a negative score
     // indicates a favourable outcome for "X".
-    private minimax(this: Game, board : string[], isMaximizing : boolean) : number {
+    private minimax(isMaximizing : boolean) : number {
         let result = this.winCheck();
         
         if (result === "X") return -1;
@@ -120,10 +140,10 @@ export default class Game {
         if (isMaximizing) {
             let bestScore = -Infinity;
             for (let i = 0; i < 9; ++i) {
-                if (board[i] === "-") {
-                    board[i] = "O";
-                    const score = this.minimax(board, false) as number;
-                    board[i] = "-";
+                if (this.board[i] === "-") {
+                    this.board[i] = "O";
+                    const score = this.minimax(false) as number;
+                    this.board[i] = "-";
                     bestScore = Math.max(score, bestScore);
                 }
             }
@@ -131,34 +151,14 @@ export default class Game {
         } else {
             let bestScore = Infinity;
             for (let i = 0; i < 9; ++i) {
-                if (board[i] === "-") {
-                    board[i] === "X";
-                    const score = this.minimax(board, true) as number;
-                    board[i] = "-";
+                if (this.board[i] === "-") {
+                    this.board[i] === "X";
+                    const score = this.minimax(true) as number;
+                    this.board[i] = "-";
                     bestScore = Math.min(score, bestScore);
                 }
             }
             return bestScore;
         }
-    }
-
-    // obtains the index of the best move for "O"
-    private getBestMove(this: Game, board : string[]) : number {
-        let bestScore = -Infinity;
-        let bestMove = -1;
-
-        for (let i = 0; i < 9; ++i) {
-            if (board[i] === "-") {
-                board[i] === "O";
-                const score = this.minimax(board, false);
-                board[i] === "-";
-
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = i;
-                }
-            }
-        }
-        return bestMove;
     }
 }
