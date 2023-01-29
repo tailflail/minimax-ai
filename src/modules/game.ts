@@ -53,9 +53,6 @@ export default class Game {
     // A winning state for "X" occurs when 3 appears, and a winning state for "O" occurs when -3 appears.
     // The check for these conditions is given by winCheck.
     playRound(this: Game, index: number) : void {
-        const row = Math.floor(index / 3);
-        const col = index % 3;
-        
         if (this.currentPlayer() === this.playerOne) {
             this.board[index] = "X";
 
@@ -64,7 +61,7 @@ export default class Game {
         }
 
         ++this.moveCount
-        this.winCheck();
+        this.winCheck()
     }
 
     // private methods
@@ -92,21 +89,41 @@ export default class Game {
         return "CONTINUE";
     }
 
+    private winCheckAlt(this: Game) : string {
+        if (!this.board.includes("-")) {
+            return "DRAW";
+        }
+
+        for (let i = 0; i < this.winningCombinations.length; ++i) {
+            let comb = this.winningCombinations[i];
+
+            if (this.board[comb[0]] === "X" && this.board[comb[1]] === "X" && this.board[comb[2]] === "X") {
+                return "X"
+            }
+
+            if (this.board[comb[0]] === "O" && this.board[comb[1]] === "O" && this.board[comb[2]] === "O") {
+                return "O"
+            }
+        }
+        return "CONTINUE";
+    }
+
     // Minimax algorithm recursively fills the remaining squares and ranks the outcomes.
     // A positive score indicates a favourable outcome for "O", while a negative score
     // indicates a favourable outcome for "X".
-    private minimax(isMaximizing: boolean) : number {
-        let result = this.winCheck();
+    private minimax(isMaximizing: boolean, depth: number) : number {
+        let result = this.winCheckAlt();
         
-        if (result === "X") return -1;
-        if (result === "O") return 1;
-        if (result === "DRAW" || result === "CONTINUE") return 0;
+        if (result === "X") return -10 + depth;
+        if (result === "O") return 10 - depth;
+        if (result === "DRAW" || depth === 9) return 0;
 
         if (isMaximizing) {
             let bestScore = -Infinity;
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
-                    const score = this.minimax(false) as number;
+                    this.board[i] = "O";
+                    const score = this.minimax(false, depth + 1) as number;
                     this.board[i] = "-";
                     bestScore = Math.max(score, bestScore);
                 }
@@ -116,7 +133,8 @@ export default class Game {
             let bestScore = Infinity;
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
-                    const score = this.minimax(true) as number;
+                    this.board[i] = "X";
+                    const score = this.minimax(true, depth + 1) as number;
                     this.board[i] = "-";
                     bestScore = Math.min(score, bestScore);
                 }
@@ -132,7 +150,8 @@ export default class Game {
 
         for (let i = 0; i < 9; ++i) {
             if (this.board[i] === "-") {
-                const score = this.minimax(false);
+                this.board[i] = "O";
+                const score = this.minimax(false, 0) as number;
                 this.board[i] = "-";
 
                 if (score > bestScore) {
