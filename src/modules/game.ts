@@ -2,7 +2,6 @@ import Player from "./player.js";
 
 export default class Game {
     board : string[] = new Array(9).fill("-");
-    private moveCount = 0;
     private xTurn = true;
     private gameOver = false;
 
@@ -35,7 +34,6 @@ export default class Game {
 
     nextRound(this: Game) : void {
         this.board = new Array(9).fill("-");
-        this.moveCount = 0;
         this.xTurn = true;
         this.gameOver = false;
     }
@@ -55,42 +53,22 @@ export default class Game {
     playRound(this: Game, index: number) : void {
         if (this.currentPlayer() === this.playerOne) {
             this.board[index] = "X";
-
         } else {
             this.board[index] = "O";
         }
 
-        ++this.moveCount
-        this.winCheck()
+        this.winCheck(false);
     }
 
     // private methods
-    private winCheck(this: Game) : string {
-        if (this.moveCount > 8) {
-            this.gameOver = true;
-            return "DRAW";
-        }
 
-        for (let i = 0; i < this.winningCombinations.length; ++i) {
-            let comb = this.winningCombinations[i];
-
-            if (this.board[comb[0]] === "X" && this.board[comb[1]] === "X" && this.board[comb[2]] === "X") {
-                this.playerOne.win();
-                this.gameOver = true;
-                return "X"
-            }
-
-            if (this.board[comb[0]] === "O" && this.board[comb[1]] === "O" && this.board[comb[2]] === "O") {
-                this.playerTwo.win();
-                this.gameOver = true;
-                return "O"
-            }
-        }
-        return "CONTINUE";
-    }
-
-    private winCheckAlt(this: Game) : string {
+    // Player wins and game over are not changed when called in the minimax function.
+    // This prevents accidental score updates from minimax simulating possible outcomes.
+    private winCheck(this: Game, minimaxToggle: boolean) : string {
         if (!this.board.includes("-")) {
+            if (!minimaxToggle) {
+                this.gameOver = true;
+            }
             return "DRAW";
         }
 
@@ -98,10 +76,18 @@ export default class Game {
             let comb = this.winningCombinations[i];
 
             if (this.board[comb[0]] === "X" && this.board[comb[1]] === "X" && this.board[comb[2]] === "X") {
+                if (!minimaxToggle) {
+                    this.playerOne.win();
+                    this.gameOver = true;
+                }
                 return "X"
             }
 
             if (this.board[comb[0]] === "O" && this.board[comb[1]] === "O" && this.board[comb[2]] === "O") {
+                if (!minimaxToggle) {
+                    this.playerTwo.win();
+                    this.gameOver = true;
+                }
                 return "O"
             }
         }
@@ -112,7 +98,7 @@ export default class Game {
     // A positive score indicates a favourable outcome for "O", while a negative score
     // indicates a favourable outcome for "X".
     private minimax(isMaximizing: boolean, depth: number) : number {
-        let result = this.winCheckAlt();
+        let result = this.winCheck(true);
         
         if (result === "X") return -10 + depth;
         if (result === "O") return 10 - depth;
@@ -123,7 +109,7 @@ export default class Game {
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
                     this.board[i] = "O";
-                    const score = this.minimax(false, depth + 1) as number;
+                    const score = this.minimax(false, depth + 1);
                     this.board[i] = "-";
                     bestScore = Math.max(score, bestScore);
                 }
@@ -134,7 +120,7 @@ export default class Game {
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
                     this.board[i] = "X";
-                    const score = this.minimax(true, depth + 1) as number;
+                    const score = this.minimax(true, depth + 1);
                     this.board[i] = "-";
                     bestScore = Math.min(score, bestScore);
                 }
@@ -151,7 +137,7 @@ export default class Game {
         for (let i = 0; i < 9; ++i) {
             if (this.board[i] === "-") {
                 this.board[i] = "O";
-                const score = this.minimax(false, 0) as number;
+                const score = this.minimax(false, 0);
                 this.board[i] = "-";
 
                 if (score > bestScore) {
