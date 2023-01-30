@@ -23,7 +23,7 @@ the [npm](https://www.npmjs.com/) package manager.
 
 `npm run build`
 
-4. Open ./dist/index.html in your browser
+4. Open http://localhost:8080/ in your browser
 
 ## How to Play
 
@@ -41,5 +41,5 @@ the [npm](https://www.npmjs.com/) package manager.
 
 - TypeScript
 - Tailwind CSS
-- Minimax algorithm
 - npm
+- Minimax algorithm
