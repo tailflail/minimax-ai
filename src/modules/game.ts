@@ -56,7 +56,6 @@ export default class Game {
         } else {
             this.board[index] = "O";
         }
-
         this.winCheck(false);
     }
 
