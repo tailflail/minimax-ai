@@ -31,7 +31,7 @@ the [npm](https://www.npmjs.com/) package manager.
 
 <img src="https://user-images.githubusercontent.com/89919950/215422251-31e42d3e-a45e-4813-8b0a-ddaa1aeabbb8.png" width="650">
 
-2. Select **[Play]** for player control, or **[Play against computer]** to compete against the minimax algorithm
+2. Select **[Start]** for player control, or **[Play against computer]** to compete against the minimax algorithm
 
 <img src="https://user-images.githubusercontent.com/89919950/215422388-2b796048-1475-4a4b-97f1-557124eeb3b1.png" width="650">
 
