@@ -47,9 +47,6 @@ export default class Game {
         this.xTurn = !this.xTurn;
     }
 
-    // The rows/columns/diagonals arrays have their appropriate element incremented for "X" or decremented for "O". 
-    // A winning state for "X" occurs when 3 appears, and a winning state for "O" occurs when -3 appears.
-    // The check for these conditions is given by winCheck.
     playRound(this: Game, index: number) : void {
         if (this.currentPlayer() === this.playerOne) {
             this.board[index] = "X";
