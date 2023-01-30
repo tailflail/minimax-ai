@@ -94,10 +94,13 @@ export default class Game {
         return "CONTINUE";
     }
 
-    // Minimax algorithm recursively fills the remaining squares and ranks the outcomes.
-    // A positive score indicates a favourable outcome for "O", while a negative score
-    // indicates a favourable outcome for "X".
-    private minimax(isMaximizing: boolean, depth: number) : number {
+    /* Minimax algorithm recursively fills the remaining squares and ranks the outcomes.
+    A positive score indicates a favourable outcome for "O", while a negative score
+    indicates a favourable outcome for "X".
+    
+    Alpha-beta pruning is included to decrease the number of outcomes that are evaluated. 
+    Evaluation stops when beta <= alpha, indicating a negative outcome for the computer "O". */
+    private minimax(isMaximizing: boolean, depth: number, alpha: number, beta: number) : number {
         let result = this.winCheck(true);
         
         if (result === "X") return -10 + depth;
@@ -109,9 +112,12 @@ export default class Game {
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
                     this.board[i] = "O";
-                    const score = this.minimax(false, depth + 1);
+                    const score = this.minimax(false, depth + 1, alpha, beta);
                     this.board[i] = "-";
+
                     bestScore = Math.max(score, bestScore);
+                    alpha = Math.max(alpha, bestScore);
+                    if (beta <= alpha) break;
                 }
             }
             return bestScore;
@@ -120,9 +126,12 @@ export default class Game {
             for (let i = 0; i < 9; ++i) {
                 if (this.board[i] === "-") {
                     this.board[i] = "X";
-                    const score = this.minimax(true, depth + 1);
+                    const score = this.minimax(true, depth + 1, alpha, beta);
                     this.board[i] = "-";
+
                     bestScore = Math.min(score, bestScore);
+                    beta = Math.min(beta, bestScore);
+                    if (beta <= alpha) break;
                 }
             }
             return bestScore;
@@ -137,7 +146,7 @@ export default class Game {
         for (let i = 0; i < 9; ++i) {
             if (this.board[i] === "-") {
                 this.board[i] = "O";
-                const score = this.minimax(false, 0);
+                const score = this.minimax(false, 0, -Infinity, Infinity);
                 this.board[i] = "-";
 
                 if (score > bestScore) {
