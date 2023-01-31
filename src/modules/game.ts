@@ -1,7 +1,7 @@
 import Player from "./player.js";
 
 export default class Game {
-    board : string[] = new Array(9).fill("-");
+    private board : string[] = new Array(9).fill("-");
     private xTurn = true;
     private gameOver = false;
 
@@ -43,20 +43,42 @@ export default class Game {
         this.playerTwo.reset();
     }
 
-    changeTurn(this: Game) : void {
-        this.xTurn = !this.xTurn;
-    }
-
-    playRound(this: Game, index: number) : void {
+    playRound(this: Game, index: number) : string {
         if (this.currentPlayer() === this.playerOne) {
             this.board[index] = "X";
         } else {
             this.board[index] = "O";
         }
         this.winCheck(false);
+        this.changeTurn();
+
+        return this.board[index];
+    }
+
+    // obtains the index of the best move for "O" using minimax
+    getBestMove(this: Game) : number {
+        let bestScore = -Infinity;
+        let bestMove = -1;
+
+        for (let i = 0; i < 9; ++i) {
+            if (this.board[i] === "-") {
+                this.board[i] = "O";
+                const score = this.minimax(false, 0, -Infinity, Infinity);
+                this.board[i] = "-";
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+        return bestMove;
     }
 
     // private methods
+    private changeTurn(this: Game) : void {
+        this.xTurn = !this.xTurn;
+    }
 
     // Player wins and game over are not changed when called in the minimax function.
     // This prevents accidental score updates from minimax simulating possible outcomes.
@@ -96,7 +118,7 @@ export default class Game {
     
     Alpha-beta pruning is included to decrease the number of outcomes that are evaluated. 
     Evaluation stops when beta <= alpha, indicating a negative outcome for the computer "O". */
-    private minimax(isMaximizing: boolean, depth: number, alpha: number, beta: number) : number {
+    private minimax(this: Game, isMaximizing: boolean, depth: number, alpha: number, beta: number) : number {
         let result = this.winCheck(true);
         
         if (result === "X") return -10 + depth;
@@ -132,25 +154,5 @@ export default class Game {
             }
             return bestScore;
         }
-    }
-
-    // obtains the index of the best move for "O" using minimax
-    getBestMove() : number {
-        let bestScore = -Infinity;
-        let bestMove = -1;
-
-        for (let i = 0; i < 9; ++i) {
-            if (this.board[i] === "-") {
-                this.board[i] = "O";
-                const score = this.minimax(false, 0, -Infinity, Infinity);
-                this.board[i] = "-";
-
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = i;
-                }
-            }
-        }
-        return bestMove;
     }
 }

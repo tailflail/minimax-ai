@@ -20,7 +20,7 @@ let game = new Game();
 
 initEvents();
 
-function initEvents() {
+function initEvents() : void {
     startButton.addEventListener("click", onStartButtonClick);
     computerButton.addEventListener("click", onComputerButtonClick);
     resetBoard.addEventListener("click", onResetBoardButtonClick);
@@ -32,34 +32,20 @@ function initEvents() {
 }
 
 // main game logic
-function onGridButtonClick(gridButton : HTMLElement, index : number) {
+function onGridButtonClick(gridButton : HTMLElement, index : number) : void {
     if (!game.isGameOver() && gridButton.textContent === "") {
-        game.playRound(index);
+        gridButton.textContent = game.playRound(index);
 
-        if (!computerToggle) {
-            if (game.currentPlayer() === game.playerOne) {
-                gridButton.textContent = "X";
-            } else {
-                gridButton.textContent = "O";
-            }
-        } else {
-            gridButton.textContent = "X";
-            game.changeTurn();
-
-            if (!game.isGameOver()) {
-                let computerIndex = game.getBestMove();
-                game.playRound(computerIndex);
-                gridButtons[computerIndex].textContent = "O";
-            }
+        if (computerToggle && !game.isGameOver()) {
+            let computerIndex = game.getBestMove();
+            gridButtons[computerIndex].textContent = game.playRound(computerIndex);
         }
 
-        game.changeTurn();
-        playerOneScore.textContent = `${game.playerOne.score}`;
-        playerTwoScore.textContent = `${game.playerTwo.score}`;
+        updateScore();
     }
 }
 
-// button to reset the board squares when game is over
+// button to reset the board squares
 function onResetBoardButtonClick() {
     gridButtons.forEach((gridButton : HTMLElement) => {
         gridButton.textContent = "";
@@ -68,42 +54,55 @@ function onResetBoardButtonClick() {
 }
 
 // button to reset and choose new player names
-function onResetPlayersButtonClick(event : MouseEvent) {
+function onResetPlayersButtonClick(event : MouseEvent) : void {
     event.preventDefault();
 
     resetBoard.click();
     game.resetPlayers();
 
-    playerOneScore.textContent = `${game.playerOne.score}`;
-    playerTwoScore.textContent = `${game.playerTwo.score}`;
+    updateScore();
 
     computerToggle = false;
 
-    gameBoard.classList.toggle("hidden");
-    startScreen.classList.toggle("hidden");
+    toggleBoard();
 }
 
-// button to display the game board with the chosen player names
-function onStartButtonClick(event : MouseEvent) {
-    toggleBoard(event);
+// button to start a player against player game
+function onStartButtonClick(event : MouseEvent) : void {
+    event.preventDefault();
+
+    toggleBoard();
+    initBoardNames();
 }
 
 // button to display the game board and play against the computer
-function onComputerButtonClick(event : MouseEvent) {
-    toggleBoard(event);
+function onComputerButtonClick(event : MouseEvent) : void {
+    event.preventDefault();
+
+    toggleBoard();
+    initBoardNames();
+
     playerTwoName.textContent += " (Computer)";
     computerToggle = true;
 }
 
-function toggleBoard(event : MouseEvent) {
-    event.preventDefault();
-
+// initialize game and DOM player names
+function initBoardNames() : void {
     game.playerOne.name = playerOneInput.value;
     game.playerTwo.name = playerTwoInput.value;
 
     playerOneName.textContent = game.playerOne.name;
     playerTwoName.textContent = game.playerTwo.name;
+}
 
+// toggle between start screen and game screen
+function toggleBoard() : void {
     startScreen.classList.toggle("hidden");
     gameBoard.classList.toggle("hidden");
+}
+
+// update the DOM player scores
+function updateScore() : void {
+    playerOneScore.textContent = `${game.playerOne.score}`;
+    playerTwoScore.textContent = `${game.playerTwo.score}`;
 }
