@@ -1,22 +1,22 @@
 import Game from "./modules/game.js";
 
-let gameBoard : HTMLElement = document.getElementById("gameBoard") as HTMLElement;
-let startScreen : HTMLElement = document.getElementById("startScreen") as HTMLElement;
-let startButton : HTMLElement = document.getElementById("startButton") as HTMLElement;
-let computerButton : HTMLElement = document.getElementById("computerButton") as HTMLElement;
-let playerOneInput : HTMLInputElement = document.getElementById("playerOneInput") as HTMLInputElement;
-let playerTwoInput : HTMLInputElement = document.getElementById("playerTwoInput") as HTMLInputElement;
-let playerOneName : HTMLElement = document.getElementById("playerOneName") as HTMLElement;
-let playerTwoName : HTMLElement = document.getElementById("playerTwoName") as HTMLElement;
-let playerOneScore : HTMLElement = document.getElementById("playerOneScore") as HTMLElement;
-let playerTwoScore : HTMLElement = document.getElementById("playerTwoScore") as HTMLElement;
-let gridContainer : HTMLElement = document.getElementById("gridSquares") as HTMLElement;
-let gridButtons : NodeListOf<HTMLElement> = gridContainer.querySelectorAll("button");
-let resetBoard : HTMLElement = document.getElementById("resetBoard") as HTMLElement;
-let resetPlayers : HTMLElement = document.getElementById("resetPlayers") as HTMLElement;
+const gameBoard : HTMLElement = document.getElementById("gameBoard") as HTMLElement;
+const startScreen : HTMLElement = document.getElementById("startScreen") as HTMLElement;
+const startButton : HTMLElement = document.getElementById("startButton") as HTMLElement;
+const computerButton : HTMLElement = document.getElementById("computerButton") as HTMLElement;
+const playerOneInput : HTMLInputElement = document.getElementById("playerOneInput") as HTMLInputElement;
+const playerTwoInput : HTMLInputElement = document.getElementById("playerTwoInput") as HTMLInputElement;
+const playerOneName : HTMLElement = document.getElementById("playerOneName") as HTMLElement;
+const playerTwoName : HTMLElement = document.getElementById("playerTwoName") as HTMLElement;
+const playerOneScore : HTMLElement = document.getElementById("playerOneScore") as HTMLElement;
+const playerTwoScore : HTMLElement = document.getElementById("playerTwoScore") as HTMLElement;
+const gridContainer : HTMLElement = document.getElementById("gridSquares") as HTMLElement;
+const gridButtons : NodeListOf<HTMLElement> = gridContainer.querySelectorAll("button");
+const resetBoard : HTMLElement = document.getElementById("resetBoard") as HTMLElement;
+const resetPlayers : HTMLElement = document.getElementById("resetPlayers") as HTMLElement;
 
 let computerToggle = false;
-let game = new Game();
+const game = new Game();
 
 initEvents();
 
@@ -37,7 +37,7 @@ function onGridButtonClick(gridButton : HTMLElement, index : number) : void {
         gridButton.textContent = game.playRound(index);
 
         if (computerToggle && !game.isGameOver()) {
-            let computerIndex = game.getBestMove();
+            const computerIndex = game.getBestMove();
             gridButtons[computerIndex].textContent = game.playRound(computerIndex);
         }
 

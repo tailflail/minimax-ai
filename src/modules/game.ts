@@ -91,7 +91,7 @@ export default class Game {
         }
 
         for (let i = 0; i < this.winningCombinations.length; ++i) {
-            let comb = this.winningCombinations[i];
+            const comb = this.winningCombinations[i];
 
             if (this.board[comb[0]] === "X" && this.board[comb[1]] === "X" && this.board[comb[2]] === "X") {
                 if (!minimaxToggle) {
@@ -119,7 +119,7 @@ export default class Game {
     Alpha-beta pruning is included to decrease the number of outcomes that are evaluated. 
     Evaluation stops when beta <= alpha, indicating a negative outcome for the computer "O". */
     private minimax(this: Game, isMaximizing: boolean, depth: number, alpha: number, beta: number) : number {
-        let result = this.winCheck(true);
+        const result = this.winCheck(true);
         
         if (result === "X") return -10 + depth;
         if (result === "O") return 10 - depth;
