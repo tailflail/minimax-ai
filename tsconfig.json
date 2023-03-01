@@ -3,7 +3,9 @@
         "strict": true,
         "target": "es2022",
         "outDir": "./dist",
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "moduleResolution": "node",
+        "esModuleInterop": true
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*"],
 }
