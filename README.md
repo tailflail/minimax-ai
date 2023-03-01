@@ -6,7 +6,7 @@ This project was an exercise in implementing the Minimax algorithm. The Minimax 
 for analysing and ranking possible outcomes based on given initial conditions. Additional optimisation is included using alpha-beta pruning, which decreases
 the depth of the search by discarding outcomes that are unfavourable for the computer. Here it is demonstrated using a standard 3x3 grid variant of Tic Tac Toe.
 
-The project is coded in [TypeScript](https://www.typescriptlang.org/) and styled using [Tailwind CSS](https://tailwindcss.com/). These dependencies are managed using
+The project is coded in [TypeScript](https://www.typescriptlang.org/) and styled using [Tailwind CSS](https://tailwindcss.com/). Unit testing for the game logic is written with [Jest](https://kulshekhar.github.io/ts-jest/). These dependencies are managed using
 the [npm](https://www.npmjs.com/) package manager.
 
 ## How to Run
@@ -43,3 +43,5 @@ the [npm](https://www.npmjs.com/) package manager.
 - Tailwind CSS
 - npm
 - Minimax algorithm
+- Jest
+- ts-jest
